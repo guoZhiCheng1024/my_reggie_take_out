@@ -1,10 +1,9 @@
 package com.GZC.reggie.filter;
 
 
+import com.GZC.reggie.common.BaseContext;
 import com.GZC.reggie.common.R;
 import com.alibaba.fastjson.JSON;
-import com.sun.deploy.net.HttpResponse;
-import com.sun.org.apache.xpath.internal.objects.XString;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.AntPathMatcher;
 
@@ -38,12 +37,17 @@ public class LoginCheckFilter implements Filter {
         };
         //判断URL是否需要拦截
         boolean check = check(urls,requestURL);
+
         if (check){
             filterChain.doFilter(request,response);
             return;
         }
+        //如果已经登录放行
         if (request.getSession().getAttribute("employee")!=null)
         {
+            Long empId =(Long)request.getSession().getAttribute("employee");
+            BaseContext.setCurrentId(empId);
+
             filterChain.doFilter(request,response);
             return;
         }
